@@ -1,0 +1,20 @@
+server:
+  compression:
+    enabled: true
+    min-response-size: 512
+  port: 8080
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 100
+      minimum-idle: 10
+    username: usuario
+    url: jdbc:postgresql://localhost:5432/rinha
+    password: senha
+#
+#logging:
+#  file:
+#    name: /Users/cledson/projects/arquivolazy-exception.log
+#  level:
+#    org:
+#      springframework: DEBUG

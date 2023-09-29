@@ -1,0 +1,70 @@
+version: '3.1'
+services:
+  api-01:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    hostname: api-01
+    network_mode: "host"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/rinha
+      SERVER_PORT: 8081
+    depends_on:
+      - db2
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: '0.70GB'
+  api-02:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    hostname: api-02
+    network_mode: "host"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/rinha
+      SERVER_PORT: 8082
+    depends_on:
+      - db2
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "0.70GB"
+  nginx:
+    image: nginx
+    hostname: nginx
+    network_mode: "host"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-01
+      - api-02
+    ports:
+      - "9999"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: "0.2GB"
+
+  db2:
+    image: postgres
+    restart: always
+    hostname: db
+    network_mode: "host"
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_USER: usuario
+      POSTGRES_PASSWORD: senha
+      POSTGRES_DB: rinha
+    command: postgres -c log_min_messages=panic -c log_min_error_statement=panic
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    deploy:
+      resources:
+        limits:
+          cpus: "0.9"
+          memory: "1.4GB"
